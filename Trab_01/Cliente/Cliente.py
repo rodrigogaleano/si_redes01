@@ -20,7 +20,7 @@ cliente.send(arquivo.encode())
 #Receber os dados do servidor
 #wb: writebytes
 with open (arquivo,'wb') as file:
-    while 1:
+    while True:
         dados = cliente.recv(1000000)
         if not dados:
             break
