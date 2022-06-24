@@ -1,31 +1,47 @@
-import socket # Importa o módulo socket
+import socket
 
 HOST = 'localhost'  # Endereco IP do Servidor
 PORT = 5000 # Porta que o Servidor está escutando
 
-print('========== CLIENTE ==========')
+print('+-----------------------------------------------------+')
+print('|                                                     |')
+print('|                       CLIENTE                       |')
+print('|                                                     |')
+print('+-----------------------------------------------------+\n')
 
 # ===== Conexão com o servidor =====
-
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Cria o socket
 cliente.connect((HOST, PORT)) # Conecta ao servidor
-print('Conectado ao servidor') # Imprime mensagem de conexão
+print('Conexão estabelecida com', HOST, 'na porta', PORT, '!\n')
 
-# ===== Envio e recebimento de mensagem =====
+# ===== Recebe e informa as opções na tela para escolha =====
 
-mensagem_opcoes = cliente.recv(1024).decode() # Recebe a mensagem de opções
-opcao = input(mensagem_opcoes) # Armazena a opção escolhida
+opcoes = cliente.recv(1024).decode() # Recebe a mensagem de opções
+
+opcao = input(opcoes) # Cliente escolhe a opção
+while opcao not in ['1', '2', '3']:
+    opcao = input('Opção inválida, tente novamente:')
+
 cliente.sendall(str.encode(opcao)) # Envia a opção escolhida para o servidor
 
 mensagem_escolha = cliente.recv(1024).decode() # Recebe a mensagem de escolha
 print(mensagem_escolha) # Imprime a mensagem de escolha
 
-# ===== Envio dos valores =====
+# ===== Informa os valores =====
 
- # Se a opção escolhida for 1
+# Se a opção escolhida for 1
 if opcao == '1':
-    valor1 = int(input('Digite o primeiro valor: ')) # Armazena o primeiro valor
-    valor2 = int(input('Digite o segundo valor: ')) # Armazena o segundo valor
+
+    #Repete até o cliente informar um valor válido
+    while True:
+        try:
+            valor1 = int(input("Informe o primeiro valor: "))
+            valor2 = int(input("Informe o segundo valor: "))
+            break
+        except:
+            print("\nValor inválido, por favor informe um valor inteiro!\n")
+            continue
+
     cliente.sendall(str.encode(str(valor1))) # Envia o primeiro valor para o servidor
     cliente.sendall(str.encode(str(valor2))) # Envia o segundo valor para o servidor
 
@@ -36,10 +52,5 @@ elif opcao == '2':
     cliente.sendall(str.encode(string1)) # Envia a primeira string para o servidor
     cliente.sendall(str.encode(string2)) # Envia a segunda string para o servidor
 
-reposta = cliente.recv(1024).decode() # Recebe a resposta do servidor
-
-# ===== Impressão da resposta =====
-if opcao == '3':
-    print('Encerrando conexao')
-else:
-    print('Resposta do servidor: ' + reposta)
+resposta = cliente.recv(1024).decode() # Recebe a mensagem de resposta
+print('\nResultado:', resposta) # Imprime a mensagem de resposta
